@@ -18,19 +18,17 @@ def load_config(config_path: str = 'config/config.yaml') -> Dict[str, Any]:
         with open(config_path, 'r') as file:
             config = yaml.safe_load(file)
 
-            # Load sensitive data from environment variables
-            config['telegram']['api_id'] = os.getenv('TELEGRAM_API_ID')
+            # Replace placeholders with actual environment variable values
+            config['telegram']['api_id'] = int(os.getenv('TELEGRAM_API_ID'))
             config['telegram']['api_hash'] = os.getenv('TELEGRAM_API_HASH')
             config['telegram']['bot_token'] = os.getenv('TELEGRAM_BOT_TOKEN')
-            config['telegram']['owner_id'] = os.getenv('OWNER_USER_ID')
+            config['telegram']['owner_id'] = int(os.getenv('OWNER_USER_ID'))
+            config['logging']['level'] = os.getenv('LOG_LEVEL', 'INFO')
 
             # Validate the necessary environment variables
             if not all([config['telegram']['api_id'], config['telegram']['api_hash'],
                         config['telegram']['bot_token'], config['telegram']['owner_id']]):
                 raise ValueError("Missing one or more required environment variables for Telegram API credentials.")
-
-            # Set default logging level if not set
-            config['logging']['level'] = os.getenv('LOG_LEVEL', config['logging'].get('level', 'INFO'))
 
             return config
     except FileNotFoundError:
@@ -38,6 +36,9 @@ def load_config(config_path: str = 'config/config.yaml') -> Dict[str, Any]:
         raise
     except yaml.YAMLError as exc:
         logging.error(f"Error parsing YAML file: {exc}")
+        raise
+    except ValueError as e:
+        logging.error(f"Environment variable error: {e}")
         raise
 
 def setup_logging(log_file: str, level: str) -> None:
@@ -66,25 +67,9 @@ def setup_logging(log_file: str, level: str) -> None:
     logger.addHandler(file_handler)
     logger.addHandler(stream_handler)
 
-def create_telegram_client(session_name: str, api_id: str, api_hash: str) -> TelegramClient:
+def create_telegram_client(session_name: str, api_id: int, api_hash: str) -> TelegramClient:
     """Initialize and return a Telegram client."""
     return TelegramClient(session_name, api_id, api_hash)
-
-def make_api_request(method: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
-    """Make a direct API request to the Telegram Bot API."""
-    bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
-    url = f'https://api.telegram.org/bot{bot_token}/{method}'
-
-    try:
-        response = requests.get(url, params=params)
-        response.raise_for_status()  # Raise an error for bad responses
-
-        # Log and return the JSON response
-        logging.info(f"API request to {method} succeeded.")
-        return response.json()
-    except requests.exceptions.RequestException as e:
-        logging.error(f"API request to {method} failed: {e}")
-        return {"ok": False, "error": str(e)}
 
 async def process_reactions(event: UpdateMessageReactions, client: TelegramClient, config: Dict[str, Any]) -> None:
     """Process reactions from a message and notify the owner."""
