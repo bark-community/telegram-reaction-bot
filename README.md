@@ -64,7 +64,7 @@ PyYAML==6.0.1
 1. **Clone the Repository**:
 
    ```bash
-   git clone https://github.com/your-username/telegram-reaction-bot.git
+   git clone https://github.com/bark-community/telegram-reaction-bot.git
    cd telegram-reaction-bot
    ```
 
