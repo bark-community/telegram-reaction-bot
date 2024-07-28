@@ -2,14 +2,14 @@
 
 telegram:
   session_name: 'my_session'  # Customize your session name for the Telethon client
-  api_id: null                # Placeholder for API ID, should be set from environment variables
-  api_hash: null              # Placeholder for API Hash, should be set from environment variables
-  bot_token: null             # Placeholder for Bot Token, should be set from environment variables
-  owner_id: null              # Placeholder for Owner User ID, should be set from environment variables
+  api_id: ${TELEGRAM_API_ID}  # API ID, set from environment variables
+  api_hash: ${TELEGRAM_API_HASH}  # API Hash, set from environment variables
+  bot_token: ${TELEGRAM_BOT_TOKEN}  # Bot Token, set from environment variables
+  owner_id: ${OWNER_USER_ID}  # Owner User ID, set from environment variables
 
 logging:
   log_file: 'logs/bot.log'    # Path to the log file where logs will be stored
-  level: 'INFO'               # Logging level: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  level: ${LOG_LEVEL}         # Logging level, set from environment variables: DEBUG, INFO, WARNING, ERROR, CRITICAL
 
 health_check:
   interval: 300               # Health check interval in seconds (default is 5 minutes)
