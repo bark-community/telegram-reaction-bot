@@ -1,3 +1,5 @@
+# src/telegram_bot.py
+
 import os
 import logging
 import asyncio
@@ -5,6 +7,7 @@ from telethon import TelegramClient, events
 from telethon.tl.types import UpdateMessageReactions
 from telebot import TeleBot
 import yaml
+from logging.handlers import RotatingFileHandler
 from typing import Dict, Any
 
 def load_config(config_path: str = 'config/config.yaml') -> Dict[str, Any]:
@@ -32,15 +35,31 @@ def load_config(config_path: str = 'config/config.yaml') -> Dict[str, Any]:
         raise
 
 def setup_logging(log_file: str, level: str) -> None:
-    """Setup logging configuration."""
-    logging.basicConfig(
-        level=getattr(logging, level.upper(), 'INFO'),
-        format='%(asctime)s - %(levelname)s - %(message)s',
-        handlers=[
-            logging.FileHandler(log_file),
-            logging.StreamHandler()
-        ]
+    """Setup logging configuration with rotation and structured logging."""
+    if not os.path.exists('logs'):
+        os.makedirs('logs')  # Create logs directory if it doesn't exist
+
+    # Define the format for log messages
+    log_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    date_format = '%Y-%m-%d %H:%M:%S'
+
+    # Configure logging
+    logger = logging.getLogger()  # Root logger
+    logger.setLevel(getattr(logging, level.upper(), 'INFO'))
+
+    # File handler with rotation
+    file_handler = RotatingFileHandler(
+        log_file, maxBytes=5 * 1024 * 1024, backupCount=5
     )
+    file_handler.setFormatter(logging.Formatter(log_format, date_format))
+
+    # Stream handler for console output
+    stream_handler = logging.StreamHandler()
+    stream_handler.setFormatter(logging.Formatter(log_format, date_format))
+
+    # Add handlers to the logger
+    logger.addHandler(file_handler)
+    logger.addHandler(stream_handler)
 
 def create_telegram_client(session_name: str, api_id: str, api_hash: str) -> TelegramClient:
     """Initialize and return a Telegram client."""
@@ -73,7 +92,7 @@ async def process_reactions(event: UpdateMessageReactions, client: TelegramClien
                 f"reacted with {emoji} to message ID {message_id}"
             )
             logging.info(f"Processing reaction: {message}")
-            await send_message_with_retry(bot, config['telegram']['owner_id'], message, 
+            await send_message_with_retry(client, config['telegram']['owner_id'], message, 
                                           config['notifications']['retry_attempts'], 
                                           config['notifications']['retry_delay'])
 

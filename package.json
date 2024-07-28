@@ -17,7 +17,8 @@
     "reactions",
     "notifications",
     "telethon",
-    "telebot"
+    "telebot",
+    "BARK"
   ],
   "author": "BARK Protocol",
   "license": "MIT",

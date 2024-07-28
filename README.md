@@ -1,6 +1,6 @@
-# Telegram Reaction Bot
+# Reaction Notifier Bot | Telegram Reaction Bot
 
-The Telegram Reaction Bot is designed to monitor message reactions in Telegram channels and notify the channel owner with detailed information about the users who reacted. Built using the Telethon and Telebot libraries, this bot is configurable, efficient, and easy to maintain.
+The **ReactionNotifierBot** is a Telegram Reaction Bot designed to monitor message reactions in Telegram channels and notify the channel owner with detailed information about the users who reacted. Built using the Telethon and Telebot libraries, this bot is configurable, efficient, and easy to maintain.
 
 ## Features
 
@@ -12,7 +12,7 @@ The Telegram Reaction Bot is designed to monitor message reactions in Telegram c
 
 ## Architecture
 
-The bot is structured with a modular design to efficiently manage Telegram message reactions. Key components include:
+The **ReactionNotifierBot** is structured with a modular design to efficiently manage Telegram message reactions. Key components include:
 
 - **Telethon Client**: Handles communication with the Telegram API to receive and process events.
 - **Telebot API**: Utilized for sending messages that notify the channel owner of reactions.
@@ -20,7 +20,7 @@ The bot is structured with a modular design to efficiently manage Telegram messa
 - **Logging**: Provides detailed logs that assist in debugging and monitoring the bot's operations.
 - **Asynchronous Processing**: Uses asynchronous programming to handle events efficiently, preventing blocking operations and improving performance.
 
-## Project Structure
+## File & Folder Structure
 
 ```
 telegram-reaction-bot/
