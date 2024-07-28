@@ -1,21 +1,23 @@
+# Configuration file for Telegram Reaction Bot
+
 telegram:
-  session_name: 'my_session'     # Customize your session name for the Telethon client
-  api_id: null                   # Placeholder for API ID, set from environment variables
-  api_hash: null                 # Placeholder for API Hash, set from environment variables
-  bot_token: null                # Placeholder for Bot Token, set from environment variables
-  owner_id: null                 # Placeholder for Owner User ID, set from environment variables
+  session_name: 'my_session'  # Customize your session name for the Telethon client
+  api_id: null                # Placeholder for API ID, should be set from environment variables
+  api_hash: null              # Placeholder for API Hash, should be set from environment variables
+  bot_token: null             # Placeholder for Bot Token, should be set from environment variables
+  owner_id: null              # Placeholder for Owner User ID, should be set from environment variables
 
 logging:
-  log_file: 'logs/bot.log'       # Path to the log file where logs will be stored
-  level: 'INFO'                  # Logging level: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  log_file: 'logs/bot.log'    # Path to the log file where logs will be stored
+  level: 'INFO'               # Logging level: DEBUG, INFO, WARNING, ERROR, CRITICAL
 
 health_check:
-  interval: 300                  # Health check interval in seconds (default is 5 minutes)
+  interval: 300               # Health check interval in seconds (default is 5 minutes)
 
 notifications:
-  retry_attempts: 3              # Number of retry attempts for sending messages
-  retry_delay: 2                 # Delay between retry attempts in seconds
+  retry_attempts: 3           # Number of retry attempts for sending messages
+  retry_delay: 2              # Delay between retry attempts in seconds
 
 advanced_settings:
-  max_reactions_per_message: 100 # Limit on the number of reactions processed per message
-  fetch_user_data: true          # Whether to fetch detailed user data for reactions
+  max_reactions_per_message: 100  # Limit on the number of reactions processed per message
+  fetch_user_data: true       # Whether to fetch detailed user data for reactions

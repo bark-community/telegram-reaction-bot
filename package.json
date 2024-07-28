@@ -1,12 +1,14 @@
 {
   "name": "telegram-reaction-bot",
   "version": "1.0.0",
-  "description": "A Telegram bot that monitors message reactions and notifies the channel owner, built with Telethon and Telebot.",
+  "description": "A Telegram Reaction Telegram bot that monitors message reactions and notifies the channel owner, built with Telethon and Telebot.",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "test": "jest --coverage",
+    "run-the-bot": "python src/telegram_bot.py",
+    "test-bot": "python -m unittest discover tests",
     "lint": "eslint src/**/*.js",
     "build": "babel src -d dist",
     "prestart": "npm run build"

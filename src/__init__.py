@@ -1,7 +1,23 @@
-# src/__init__.py
+# Import key functions and classes for convenient package-level access
+from .telegram_bot import (
+    load_config,
+    setup_logging,
+    create_telegram_client,
+    process_reactions,
+    send_message,
+    send_message_with_retry,
+    monitor_bot_health,
+    main,
+)
 
-# Import key classes or functions to make them accessible at the package level
-from .telegram_bot import create_telegram_client, create_telebot, main
-
-# Define what is available when `import *` is used on the package
-__all__ = ["create_telegram_client", "create_telebot", "main"]
+# Define what is accessible when importing *
+__all__ = [
+    "load_config",
+    "setup_logging",
+    "create_telegram_client",
+    "process_reactions",
+    "send_message",
+    "send_message_with_retry",
+    "monitor_bot_health",
+    "main",
+]

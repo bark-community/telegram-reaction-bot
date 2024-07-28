@@ -1,21 +1,23 @@
 # Reaction Notifier Bot | Telegram Reaction Bot
 
-The **ReactionNotifierBot** is a Telegram Reaction Bot designed to monitor message reactions in Telegram channels and notify the channel owner with detailed information about the users who reacted. Built using the Telethon and Telebot libraries, this bot is configurable, efficient, and easy to maintain.
+The **ReactionNotifierBot** is a Telegram Reaction Bot designed to monitor message reactions in Telegram channels and notify the channel owner with detailed information about the users who reacted. Built using the Telethon and Telebot libraries, this bot is configurable, efficient, and easy to maintain. It also includes a Flask API to start, stop, and check the status of the bot.
 
 ## Features
 
 - **Monitor Reactions**: Tracks and records reactions to messages in specified Telegram channels.
 - **User Notifications**: Sends detailed notifications to the channel owner about users who reacted.
+- **API Control**: Provides an API to control the bot operations.
 - **Error Handling**: Implements robust error handling and retry mechanisms to ensure reliability.
 - **Logging**: Logs events and errors for easy debugging and monitoring.
 - **Configurable**: Allows configuration through environment variables and a YAML configuration file for flexibility.
 
 ## Architecture
 
-The **ReactionNotifierBot** is structured with a modular design to efficiently manage Telegram message reactions. Key components include:
+The bot is structured with a modular design to efficiently manage Telegram message reactions. Key components include:
 
 - **Telethon Client**: Handles communication with the Telegram API to receive and process events.
 - **Telebot API**: Utilized for sending messages that notify the channel owner of reactions.
+- **Flask API**: Provides an interface to control the bot's start, stop, and status operations.
 - **Configuration Management**: Employs YAML files for non-sensitive settings and environment variables for sensitive data, enhancing security and manageability.
 - **Logging**: Provides detailed logs that assist in debugging and monitoring the bot's operations.
 - **Asynchronous Processing**: Uses asynchronous programming to handle events efficiently, preventing blocking operations and improving performance.
@@ -23,24 +25,28 @@ The **ReactionNotifierBot** is structured with a modular design to efficiently m
 ## File & Folder Structure
 
 ```
-telegram-reaction-bot/
+reaction-notifier-bot/
+│
+├── api/
+│ ├── init.py
+│ └── app.py # Flask API script
 │
 ├── config/
-│   └── config.yaml           # Configuration file for non-sensitive settings
+│ └── config.yaml # Configuration file for non-sensitive settings
 │
 ├── logs/
-│   └── bot.log               # Log file for the bot's activities
+│ └── bot.log # Log file for the bot's activities
 │
 ├── src/
-│   ├── __init__.py           # Makes the src directory a package
-│   └── telegram_bot.py       # Main script containing bot logic
+│ ├── init.py # Package marker
+│ └── telegram_bot.py # Main script containing bot logic
 │
 ├── tests/
-│   └── test_telegram_bot.py  # Test script for unit tests
+│ └── test_telegram_bot.py # Test script for unit tests
 │
-├── .gitignore                # Git ignore file
-├── requirements.txt          # Lists Python dependencies
-└── README.md                 # Documentation file for the GitHub repo
+├── .gitignore # Git ignore file
+├── requirements.txt # Lists Python dependencies
+└── README.md # Documentation file for the GitHub repo
 ```
 
 ## Installation
