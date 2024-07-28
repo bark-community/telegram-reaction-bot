@@ -18,8 +18,8 @@ The API facilitates easy management of a Telegram bot by providing HTTP endpoint
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/bark-community/api.git
-   cd api
+   git clone https://github.com/bark-community/telegram-reaction-bot/api.git
+   cd telegram-reaction-bot && api
    ```
 
 2. **Set Up a Virtual Environment**
