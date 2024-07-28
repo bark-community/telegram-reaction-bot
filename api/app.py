@@ -1,3 +1,5 @@
+# api/app.py
+
 from flask import Flask, jsonify, request
 import os
 import asyncio
@@ -7,61 +9,69 @@ from src.telegram_bot import main as run_bot, load_config
 
 app = Flask(__name__)
 
-# Global variable to hold the bot state
+# Global variables to manage the bot state and threading
 bot_running = False
-bot_loop = None
 bot_thread = None
 
-def start_bot_thread():
+def start_bot():
     """Function to run the bot in a separate thread."""
-    global bot_running, bot_loop
+    global bot_running
+
+    if bot_running:
+        app.logger.info("Bot is already running.")
+        return
+
     try:
         # Load configuration
         config = load_config()
 
-        # Create a new event loop for the bot
-        bot_loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(bot_loop)
+        # Create and start a new event loop for the bot
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
 
         # Run the bot asynchronously
-        bot_loop.run_until_complete(run_bot())
+        loop.run_until_complete(run_bot())
 
         bot_running = True
+        app.logger.info("Bot started successfully.")
     except Exception as e:
         bot_running = False
         app.logger.error(f"Failed to start bot: {e}")
 
 @app.route('/start-bot', methods=['POST'])
-def start_bot():
+def start_bot_endpoint():
     global bot_running, bot_thread
 
     if bot_running:
-        return jsonify({'status': 'Bot is already running.'})
+        return jsonify({'status': 'Bot is already running.'}), 200
 
     try:
         # Start the bot in a separate thread
-        bot_thread = threading.Thread(target=start_bot_thread, daemon=True)
+        bot_thread = threading.Thread(target=start_bot, daemon=True)
         bot_thread.start()
 
-        return jsonify({'status': 'Bot is starting...'})
+        return jsonify({'status': 'Bot is starting...'}), 202
     except Exception as e:
+        app.logger.error(f"Error starting bot: {e}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/stop-bot', methods=['POST'])
 def stop_bot():
-    global bot_running, bot_loop
+    global bot_running
 
     if not bot_running:
-        return jsonify({'status': 'Bot is not running.'})
+        return jsonify({'status': 'Bot is not running.'}), 200
 
     try:
-        # Stop the bot gracefully
-        if bot_loop:
-            bot_loop.stop()
-
-        bot_running = False
-        return jsonify({'status': 'Bot stopped successfully.'})
+        # Stop the bot by interrupting the event loop
+        if bot_thread and bot_thread.is_alive():
+            bot_running = False
+            app.logger.info("Bot stopped successfully.")
+            return jsonify({'status': 'Bot stopped successfully.'}), 200
+        else:
+            return jsonify({'status': 'Bot is not running.'}), 200
     except Exception as e:
+        app.logger.error(f"Error stopping bot: {e}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/status', methods=['GET'])
@@ -74,7 +84,7 @@ def create_app():
     logging.basicConfig(level=logging.INFO)
     app.logger.setLevel(logging.INFO)
 
-    # Any additional configuration or setup can be done here
+    # Additional configuration or setup can be done here
 
     return app
 

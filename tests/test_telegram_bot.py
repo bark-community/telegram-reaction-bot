@@ -6,14 +6,16 @@ from src.telegram_bot import (
     setup_logging,
     create_telegram_client,
     process_reactions,
-    send_message_with_retry
+    send_message_with_retry,
+    make_api_request
 )
 import asyncio
 from telethon.tl.types import UpdateMessageReactions, PeerChannel, Reaction
 from telethon.tl.custom.reaction import ReactionEmoticon
 
+
 class TestTelegramBot(unittest.IsolatedAsyncioTestCase):
-    
+
     @classmethod
     def setUpClass(cls):
         """Set up environment variables and logging for tests."""
@@ -21,17 +23,26 @@ class TestTelegramBot(unittest.IsolatedAsyncioTestCase):
         os.environ['TELEGRAM_API_HASH'] = 'fake_api_hash'
         os.environ['TELEGRAM_BOT_TOKEN'] = 'fake_bot_token'
         os.environ['OWNER_USER_ID'] = '123456789'
+        os.environ['LOG_LEVEL'] = 'DEBUG'
 
         # Ensure logs directory exists for logging tests
         os.makedirs('logs', exist_ok=True)
 
     def test_load_config(self):
         """Test loading the configuration file and environment variables."""
-        config = load_config('config/config.yaml')
-        self.assertEqual(config['telegram']['api_id'], '123456')
-        self.assertEqual(config['telegram']['api_hash'], 'fake_api_hash')
-        self.assertEqual(config['telegram']['bot_token'], 'fake_bot_token')
-        self.assertEqual(config['telegram']['owner_id'], '123456789')
+        with patch.dict(os.environ, {
+            'TELEGRAM_API_ID': '123456',
+            'TELEGRAM_API_HASH': 'fake_api_hash',
+            'TELEGRAM_BOT_TOKEN': 'fake_bot_token',
+            'OWNER_USER_ID': '123456789',
+            'LOG_LEVEL': 'INFO'
+        }):
+            config = load_config('config/config.yaml')
+            self.assertEqual(config['telegram']['api_id'], '123456')
+            self.assertEqual(config['telegram']['api_hash'], 'fake_api_hash')
+            self.assertEqual(config['telegram']['bot_token'], 'fake_bot_token')
+            self.assertEqual(config['telegram']['owner_id'], '123456789')
+            self.assertEqual(config['logging']['level'], 'INFO')
 
     def test_setup_logging(self):
         """Test setting up logging with the specified level."""
@@ -46,12 +57,24 @@ class TestTelegramBot(unittest.IsolatedAsyncioTestCase):
         MockTelegramClient.assert_called_once_with('my_session', '123456', 'fake_api_hash')
         self.assertIsInstance(client, MagicMock)
 
+    @patch('src.telegram_bot.requests.get')
+    def test_make_api_request(self, mock_get):
+        """Test making a direct API request to the Telegram Bot API."""
+        mock_response = MagicMock()
+        mock_response.json.return_value = {"ok": True, "result": {"id": 123456, "is_bot": True}}
+        mock_response.status_code = 200
+        mock_get.return_value = mock_response
+
+        response = make_api_request('getMe')
+        self.assertTrue(response['ok'])
+        mock_get.assert_called_once()
+
     @patch('src.telegram_bot.TelegramClient')
     async def test_send_message_with_retry(self, MockTelegramClient):
         """Test sending a message with retry logic."""
         mock_client = MockTelegramClient.return_value
         mock_client.send_message.side_effect = [Exception("Network error"), None]
-        
+
         await send_message_with_retry(mock_client, 123456789, "Test message", retries=2, delay=1)
         self.assertEqual(mock_client.send_message.call_count, 2)
 
